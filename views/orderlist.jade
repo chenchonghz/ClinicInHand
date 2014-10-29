@@ -1,0 +1,56 @@
+extends layout
+	
+block content
+	script(type='text/javascript').
+		function alertMessage(selector, level, message) {
+			$(selector).addClass('navbar-fixed-top');
+			$("<div class='alert alert-"+ level +" alert-dismissable fade in'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button><strong>"+ message +"</strong></div>").appendTo(selector).trigger('myMsgAlertShow');
+
+		}
+
+		$(document).ready(function(){
+
+			$(document).on('myMsgAlertShow', '.alert', function(){
+				window.setTimeout($.proxy(function() {
+					$(this).fadeTo(500, 0).slideUp(500, function(){
+						$(this).alert('close'); 
+					});
+				}, this), 5000);
+			});
+
+			
+			$('#payList li a').click(function(e){
+				var orid = $(this).parent().attr('data-orid');
+				$.get('/toorder/?from=paylist&action=pay&orid=' + orid, function(response){
+					$('.container#paylistContainer').fadeOut(200, function(){
+						$('.container#toPayContainer').html(response);
+						$('.container#toPayContainer').fadeIn(500);
+					});
+				});
+			});
+		});
+	div.container#msgContainer
+	div.container#toPayContainer(style='display:none;')
+	div.container#paylistContainer
+		h5
+			span.glyphicon.glyphicon-shopping-cart
+			&nbsp;
+			strong=title
+				small
+					strong &nbsp;&nbsp;ORDERS TO CHECKOUT
+		if orders === null || orders.length === 0
+			h3
+				strong 暂无数据
+		else
+			ul.nav.nav-pills.nav-stacked#payList
+				each order in orders
+					-var obj = JSON.parse(order);
+					li(data-orid=obj.orid)
+						a(href='#')
+							.well(style='margin-top:5px;margin-bottom:5px;')
+								span.label.label-danger #{obj.priceToPay}元
+								&nbsp;
+								span.label.label-info #{obj.type}
+								h4
+									strong(style='color:#4d4d4d;font-size:12px;') #{obj.des}
+	input.hide#mid(type='text', value='#{mid}')

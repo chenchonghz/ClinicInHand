@@ -1,0 +1,6 @@
+.DS_Store
+IMG_*.*
+sfz_back.jpg
+ocr-out*
+node_modules/*
+

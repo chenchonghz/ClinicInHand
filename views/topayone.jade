@@ -1,0 +1,70 @@
+script(type='text/javascript').
+	$(document).ready(function(){
+		//var until = new Date(); 
+		//until.setMinutes(until.getMinutes() + 30);
+		//$('#countdown').countdown({until:until, format:'MS'});
+
+		$('#backBtn').click(function(){
+			//$('.container#toPayContainer').fadeOut(200, function(){
+			//	$('.container#paylistContainer').fadeIn(500);
+			//});
+			window.location.href='/listorder/topay';
+		});
+
+		$('#payBtn').click(function(){
+			var btn = $(this);
+			btn.attr('disabled', 'disabled');
+			btn.button('waiting');
+
+			var postData = new Object();
+			postData.orid = $('#oridtext').val();
+			postData.generator = $('#generatortext').val();
+			postData.amount = $('#amount').html();
+			postData.orderType = $('#ordertypetext').val();
+
+			$.post('/payorder', postData, function(result){
+				btn.button('finished');
+				//$('#amount').html(result);
+
+				var msg = '';
+				var level = 'info';
+				if (result === 'expired') {
+					msg = '您的订单已过有效期，请重新预约';
+					level = 'warning';
+				} else if(result[0] === 'OK') {
+					msg = '支付成功 您可到 [我的预约单] 中查看并使用预约电子凭证';
+					level = 'success';
+				}
+				alertMessage('#msgContainer', level, msg);
+			});
+		});
+	});
+h3
+	strong 付款单
+.well
+	dl.dl-horizontal
+		dt 类型
+		dd(style='font-size:12px;color:grey;')=order.type
+		dt 生成时间
+		dd(style='font-size:12px;color:grey;')=order.createTime
+		dt 详情
+		dd
+			strong(style='font-size:12px;color:grey;') #{order.des}
+p.text-right(style='font-size:16px;color:grey;')
+	strong ￥
+		span=order.priceTotal
+	strong(style='font-size:16px;') &nbsp;应付
+div(style='border-top:1px dashed #cccccc;height: 1px;overflow:hidden;')
+p.text-right(style='font-size:36px;')
+	strong ￥
+		span#amount=order.priceToPay
+	strong(style='font-size:16px;') &nbsp;自费	
+button.btn.btn-danger.btn-lg.btn-block#payBtn(type='button' data-waiting-text='支付中 请稍候...' data-finished-text='操作完成')
+	b ￥&nbsp;支付
+if from === 'paylist'
+	button.btn.btn-default.btn-lg.btn-block#backBtn(type="button")
+		span.glyphicon.glyphicon-hand-left
+		b &nbsp;返回
+input.hide#oridtext(type='text', value='#{order.orid}')
+input.hide#generatortext(type='text', value='#{order.generator}')
+input.hide#ordertypetext(type='text', value='#{order.type}')

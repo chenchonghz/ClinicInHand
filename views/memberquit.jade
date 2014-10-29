@@ -1,0 +1,11 @@
+extends layout
+
+block content
+	.container
+		h5
+			span.glyphicon.glyphicon-user
+			strong &nbsp;#{title}
+		.well(style='color:grey;')
+			strong ARE YOU SERIOUS......
+		button.btn.btn-danger.btn-lg.btn-block(type='button' data-waiting-text='正在清除所有数据...' data-finished-text='操作完成')
+			strong 解除绑定

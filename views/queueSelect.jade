@@ -1,0 +1,43 @@
+script(type="text/javascript").
+	var alreadyReserved = false;
+
+	$(document).ready(function(){
+		$('#backBtn').click( function(){
+			$('.container#backContainer').fadeOut(200, function(){
+				$('.container#topContainer').fadeIn(500);
+			});
+		});
+
+		$('#queueNav li a').click(function(){
+			//console.log($(this).attr('data-qname'));
+			selectedQid = $(this).parent().attr('data-qid');
+			selectedQname = $(this).parent().attr('data-qname');
+			$('#myModal').modal({	
+				remote: '/resource/list/?qid=' + selectedQid + '&&fname=' + selectedFname + 
+						'&&spname=' + selectedSpname + '&&wname=' + selectedWname + '&&qname=' + selectedQname
+			});
+			$('#myModal').data('owner', 'reslist');
+		});
+	});
+h5
+	span.glyphicon.glyphicon-search
+	strong
+		&nbsp;找到&nbsp;
+		span(style='color:#85b8d6;') #{queues.length}
+		&nbsp;个有效号源
+if queues == null || queues.length == 0
+	h3
+		strong 暂无数据
+else
+	ul.nav.nav-pills.nav-stacked#queueNav(style='margin-bottom: 20px;')
+		each queue in queues
+			-var obj = JSON.parse(queue);
+			li(data-qid=obj.qid, data-qname=obj.name)
+				a.pull-left
+					strong(style='font-size:24px;') #{obj.name}&nbsp;
+					span.label.label-info 教授 主任医师
+				img.pull-right(src='/images/default-avatar.png', width=75, height=75)
+
+button.btn.btn-default.btn-lg.btn-block#backBtn(type='button')
+	span.glyphicon.glyphicon-hand-left
+	b &nbsp;重新查找

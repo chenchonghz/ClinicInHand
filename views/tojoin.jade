@@ -1,0 +1,94 @@
+//tojoin.jade
+extends layout
+
+block content
+	<!--script(src='javascripts/application.js')-->
+	script(type='text/javascript').
+
+		function verifyForm(){
+			if ($("#realname").val() != '' && $("#idcode").val() != '') {
+				$("#submitBtn").removeAttr("disabled");
+			} else {
+				$("#submitBtn").attr("disabled", "disabled");
+			}
+		}
+
+		$(document).ready(function(){
+			$("#realname").on("input paste", verifyForm);
+			$("#idcode").on("input paste", verifyForm);
+
+			$("#submitBtn").on("click", function(){
+
+				var postData = new Object();
+				postData.openid = $("#openid").val();
+				postData.realname = $("#realname").val();
+				postData.gender = $("input[name='gender']:radio:checked").val();
+				postData.email = $("#email").val();
+				postData.mobile = $("#mobile").val();
+				postData.IDCode = $("#idcode").val();
+			
+				var btn = $(this);
+				btn.attr('class', 'btn btn-default btn-lg btn-block');
+				btn.button("waiting");
+			
+				$.post("/join", postData, function(data, state){
+
+					if (data[0] === 'OK' && data[1] === 1 && data[2] === 'OK') {
+						btn.button('success');
+						btn.attr('class', 'btn btn-success btn-lg btn-block');
+						btn.attr('disabled', 'disabled');
+
+						$("#realname").attr("disabled", true);
+						$("input[name='gender']:radio").attr("disabled", "disabled");
+						$("#email").attr("disabled", true);
+						$("#mobile").attr("disabled", true);
+						$("#idcode").attr("disabled", true);
+
+					} else {
+						btn.button('reset');
+					}
+					
+				});
+			});
+		});
+	div.container
+		div.row
+			div.col-xs-3
+				img.img-circle(src='#{userinfo.headimgurl}', width=48, height=48)
+			div.col-xs-9
+				h4=userinfo.nickname
+				input.hide#openid(type="text" value="#{openid}")
+		div.panel.panel-default(style="margin:20px 20px")
+			ul.list-group
+				li.list-group-item
+					input.form-control#realname(type="text" placeholder="真实姓名 (必填)" style="border-style:none")
+				li.list-group-item
+					div.btn-group(data-toggle="buttons")
+						label.btn.btn-default
+							input(type="radio" name="gender" value="male")
+							|男
+						label.btn.btn-default
+							input(type="radio" name="gender" value="female")
+							|女
+				li.list-group-item
+					input.form-control#idcode(type="number" placeholder="身份证号 (必填)" style="border-style:none")
+				li.list-group-item
+					input.form-control#mobile(type="tel" placeholder="手机" style="border-style:none")
+				li.list-group-item
+					input.form-control#email(type="email" placeholder="邮箱" style="border-style:none")
+		button.btn.btn-primary.btn-lg.btn-block#submitBtn(data-waiting-text="请稍候..." data-success-text="已成为会员" disabled)
+			b 加入会员
+		button.btn.btn-default.btn-lg.btn-block#readmeBtn(data-toggle="modal" data-target="#readmeModal")
+			b 入会须知
+		div.modal.fade#readmeModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+			div.modal-dialog
+				div.modal-content
+					div.modal-header
+						h5.modal-title
+							b 入会须知
+					div.modal-body
+						p 入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知入会须知
+					div.modal-footer
+						button.btn.btn-default.btn-lg.btn-block(data-dismiss="modal")
+							b 关闭
+

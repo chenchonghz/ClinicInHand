@@ -1,0 +1,23 @@
+extends layout
+
+block content
+	.container
+		h5
+			span.glyphicon.glyphicon-user
+			strong &nbsp;#{title}
+				small
+					strong &nbsp;&nbsp;MEMBERSHIP INFO
+		.well
+			h5=member.realname
+			h5=member.gender
+			h5=member.IDType
+			h5=member.IDCode
+			h5=member.IDPic
+			h5=member.phone
+			h5=member.email
+			h5=member.level
+			h5=wechatuser.nickname
+			img.img-circle(src='#{wechatuser.headimgurl}', width=50, height=50)
+		button.btn.btn-primary.btn-lg.btn-block#submitBtn(data-waiting-text="修改中 请稍候..." data-submit-text="确认提交")
+			span.glyphicon.glyphicon-pencil
+			strong &nbsp;&nbsp;修改资料

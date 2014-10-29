@@ -1,0 +1,77 @@
+extends layout
+
+block content
+	script(type='text/javascript' src='/javascripts/jquery.qrcode.min.js')
+	script(type='text/javascript').
+		$(document).ready(function(){
+			var now = new Date();
+			now = now.getDate() + '日' + now.getHours() + ':' + now.getMinutes();
+			$('#nowTime').html(now);
+
+			$('#reservationList li').click(function(){
+				var rvid = $(this).attr('data-rvid');
+				$('#qrcode').qrcode({text:rvid, width:'200', height:'200'});
+				$('#qrcodeTitle').html($(this).find('strong').html());
+				$('#qrcodeSubTitle').html($(this).find("strong[style='color:black;']").html());
+				$('#qrcodeSubTitle').parent().attr('href', 'http://ditu.google.cn/?q=' + $(this).find("strong[style='color:black;']").html());
+				$('.container#listContainer').fadeOut(200, function(){
+					$('.container#detailContainer').fadeIn(500);
+				});
+			});
+			$('#backBtn').click(function(){
+				$('.container#detailContainer').fadeOut(200, function(){
+					$('.container#listContainer').fadeIn(500);
+					$('#qrcode').html('');
+				});
+			});
+		});
+		
+	input.hide#mid(type='text', value='#{mid}')
+	div.container#detailContainer(style='display:none;')
+		h5
+			span.glyphicon.glyphicon-calendar
+			strong &nbsp;预约电子凭据
+				small
+					strong &nbsp;&nbsp;ELECTRONIC VOUCHERS
+		center(style='margin-bottom:15px;margin-top:15px;')
+			h4
+				strong#qrcodeTitle
+			h6
+				a(href='#')
+					strong#qrcodeSubTitle
+					span.glyphicon.glyphicon-map-marker
+			div#qrcode(style='margin-bottom:15px;margin-top:15px;')
+			p(style='font-size:12px;')
+				span &nbsp;您前面还有
+				strong(style='font-size:16px;')
+					&nbsp;5&nbsp;
+				span 位候诊人（截至
+				span#nowTime
+				span ）
+			h6(style='color:grey;') 部分医院可能需要出示该凭证以确认挂号成功
+		button.btn.btn-default.btn-lg.btn-block#backBtn(type='button')
+			span.glyphicon.glyphicon-hand-left
+			b &nbsp;返回
+	div.container#listContainer
+		h5
+			span.glyphicon.glyphicon-calendar
+			strong &nbsp;#{title}
+				small
+					strong &nbsp;&nbsp;ALL RESERVATIONS
+		if reservations === null || reservations.length === 0
+			h3
+				strong 暂无数据
+		else
+			ul.nav.nav-pills.nav-stacked#reservationList
+				each reservation in reservations
+					-var obj = JSON.parse(reservation);
+					li(data-rvid=obj.rvid)
+						a
+							h3
+								strong(style='font-size:24px;') #{obj.tp}
+							strong(style='color:black;') #{obj.fname}&nbsp;
+							strong(style='color:black;') #{obj.spname}&nbsp;&nbsp;
+							span.label.label-info #{obj.wname}
+							span.glyphicon.glyphicon-qrcode.pull-right(style='font-size:20px;color:black;')
+							
+

@@ -1,0 +1,37 @@
+script(type="text/javascript").
+	$(document).ready(function(){
+		$('#specialtyselect li').click(function(){
+
+			if ($(this).attr('spid') === selectedSpid) {
+				//do nothing
+			} else {
+				selectedSpid = $(this).attr('spid');
+				selectedSpname = $(this).attr('spname');
+				$('#promptks').html(selectedSpname);
+
+				selectedWid = '';
+				selectedWname = '';
+				$('#promptck').html('请选择挂号窗口');
+			}
+
+			
+
+			$('.modal').modal('hide');
+		});
+	});
+
+
+div.modal-header
+	button.close(type="button" data-dismiss="modal" aria-hidden="true") &times;
+	strong 选择科室
+div.modal-body#specialtyselect
+	if specialities == null || specialities.length == 0
+		h4
+			strong 暂无数据
+	else
+		ul.nav.nav-pills.nav-stacked
+			each speciality in specialities
+				-var obj = JSON.parse(speciality);
+				li(spid=obj.spid, spname=obj.name)
+					a
+						strong=obj.name

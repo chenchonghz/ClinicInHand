@@ -1,0 +1,242 @@
+extends layout
+
+block content
+	script(type='text/javascript').
+
+		var selectedFid = '';
+		var selectedFname = '';
+		var selectedSpid = '';
+		var selectedSpname = '';
+		var selectedWid = '';
+		var selectedWname = '';
+
+		var selectedQid = '';
+		var selectedQname = '';
+
+		var selectedRid = '';
+		var selectedRname = '';
+		var selectedTp = '';
+		var selectedPrice = 0;
+
+		var likedRid = '';
+
+		function checkSearchBtnState(){
+
+			if (selectedFid != '' && selectedSpid != '' && selectedWid != '') {
+				$('#searchBtn').removeAttr("disabled");
+			} else {
+				$("#searchBtn").attr("disabled", "disabled");
+			}
+		}
+
+		function alertMessage(selector, level, message) {
+			$(selector).addClass('navbar-fixed-top');
+			$("<div class='alert alert-"+ level +" alert-dismissable fade in'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button><strong>"+ message +"</strong></div>").appendTo(selector).trigger('myMsgAlertShow');
+		}
+
+		function showPayButton(target) {
+
+			$('#backBtn b').html('&nbsp;稍后支付 继续查找');
+
+			$("<button class='btn btn-default btn-primary btn-lg btn-block' id='payBtn' type='button' data-waiting-text='请稍候...')><span class='glyphicon glyphicon-usd'></span><strong>&nbsp;付款</strong></button>").insertBefore('#backBtn');
+			$('#payBtn').click(function(){	
+				var btn = $(this);
+				btn.attr('disabled', 'disabled');
+				btn.button("waiting");
+
+				$.get('/toorder/?from=reservation&action=pay&orid=' + target, function(response){
+					btn.remove();
+					$('.container#backContainer').fadeOut(200, function(){
+						$('.container#payContainer').html(response);
+						$('.container#payContainer').fadeIn(500);
+					});
+				});				
+			});
+		}
+
+		function placeReservation(){
+			console.log('start to place an reservation of resource: %s', selectedRid);
+			
+			// ajax post reservation data to path '/reserve'
+			var postData = new Object();
+
+			postData.mid = $('#memberid').val();
+			postData.rid = selectedRid;
+			postData.fid = selectedFid;
+			postData.fname = selectedFname;
+			postData.spname = selectedSpname;
+			postData.wname = selectedWname;
+			postData.qname = selectedQname;
+			postData.rname = selectedRname;
+			postData.tp = selectedTp;
+			postData.price = selectedPrice;
+
+			$.post("/reserve", postData, function(result){
+				if (result.err === 'err') {
+
+				} else if (result.err === 'warning') {
+
+				} else if (result.msg === 'OK') {
+					//set alreadyReserved tag to true
+					alreadyReserved = true;
+					
+					alertMessage('#msgContainer','success','预约成功 付款前最长可保留30分钟');
+					
+					// generate the 'Go to pay' button which fades in div #payContainer
+					showPayButton(result.orid);
+				}
+			});
+
+			//clear selectedRid anyhow
+			selectedRid = '';	
+		}
+
+		function likeReservation(){
+			console.log('start to like an reservation of resource: %s', likedRid);
+			alertMessage('#msgContainer','info','COMING SOON...');
+
+			//clear likedRid anyhow
+			likedRid = '';
+		}
+
+		$(document).ready(function(){
+
+			$(document).on('myMsgAlertShow', '.alert', function(){
+				window.setTimeout($.proxy(function() {
+					$(this).fadeTo(500, 0).slideUp(500, function(){
+						$(this).alert('close'); 
+					});
+				}, this), 5000);
+			});
+
+			$('#searchBtn').click(function(){
+				var btn = $(this);
+
+				btn.attr('disabled', 'disabled');
+				btn.button("waiting");
+
+				$.get('/queue/list/?wid=' + selectedWid, function(response){
+					btn.button('reset');
+					btn.removeAttr('disabled');
+
+					$('.container#topContainer').fadeOut(200, function(){
+						$('.container#backContainer').html(response);
+						$('.container#backContainer').fadeIn(500);
+						
+					});
+				});
+			});
+
+			
+			$('#chooseyyitem').on('click',function(e) {
+				$('#myModal').modal({
+					remote: '/facility/listall'
+				});	
+				$('#myModal').data('owner', 'yylist');
+			});
+
+			$('#chooseksitem').on('click',function(e) {
+				if (selectedFid != '') {
+					$('#myModal').modal({
+						remote: '/specialty/list/?fid=' + selectedFid
+					});
+					$('#myModal').data('owner', 'kslist');
+				}
+			});
+
+			$('#chooseckitem').on('click',function(e) {
+				if (selectedSpid != '') {
+					$('#myModal').modal({
+						remote: '/window/list/?spid=' + selectedSpid
+					});
+					$('#myModal').data('owner', 'cklist');
+				}
+			});
+
+			$('.modal').on('hidden.bs.modal', function(){
+				console.log('owner = %s', $(this).data('owner'));
+
+				$(this).data('bs.modal', null);
+				$( '.modal-backdrop' ).remove();
+				$( 'body' ).removeClass( "modal-open" );
+				$(this).removeData('bs.modal');
+
+				if ($(this).data('owner') != 'reslist') {
+					checkSearchBtnState();
+				} else if ($(this).data('owner') === 'reslist') {
+
+					if (selectedRid != '') {
+						if (alreadyReserved === false) {
+							placeReservation();
+						} else if (alreadyReserved === true) {
+							console.log('selectedRid=%s', selectedRid);
+							alertMessage('#msgContainer','danger','呃……还来？传说中的黄牛？');
+							selectedRid = '';
+						}
+					}
+					if (likedRid != '') {
+						likeReservation();
+					}	
+				}
+			});
+
+			$('.modal').on('show.bs.modal', function(){
+				$(this).find('.modal-content').html("<div class='modal-header'><strong>请稍候...</strong></div>");
+			});
+
+		});
+	div.container#msgContainer
+	div.container#backContainer(style='display:none;')
+	div.container#payContainer(style='display:none;')
+	div.container#topContainer
+		ul.list-group
+			li.list-group-item#chooseyyitem
+				h3
+					b 医院
+					small.text-right
+						h6
+							strong#promptyy 请选择医院
+			li.list-group-item#chooseksitem
+				h3
+					b 科室
+					small.text-right
+						h6
+							strong#promptks 请选择科室
+			li.list-group-item#chooseckitem
+				h3
+					b 窗口
+					small.text-right
+						h6
+							strong#promptck 请选择挂号窗口
+		button.btn.btn-primary.btn-lg.btn-block#searchBtn(data-waiting-text="查找中 请稍候..." disabled)
+			b 开始查找&nbsp;
+			span.glyphicon.glyphicon-search
+	nav.navbar.navbar-default.navbar-fixed-bottom(role='navigation')
+		div.container-fluid
+			div.navbar-header
+				button.navbar-toggle(type='button', data-toggle='collapse', data-target="#navbar-collapse")
+					span.sr-only Toggle navigation
+					span.icon-bar
+					span.icon-bar
+					span.icon-bar
+				a.navbar-brand
+					strong 微挂号
+			div.collapse.navbar-collapse#navbar-collapse
+				ul.nav.navbar-nav.navbar-right
+					li
+						a(href='#')
+							strong 就诊人&nbsp;&nbsp;
+							strong(style='font-size:18px; color:grey;') #{member.realname}
+							input.hide#memberid(type='text' name='memberid' value='#{mid}')
+	div.modal.fade#myModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-owner="self")
+		div.modal-dialog
+			div.modal-content
+
+
+
+
+
+
+
+
+

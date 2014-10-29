@@ -1,0 +1,10 @@
+//index.jade
+extends layout
+
+block content
+	h1= title
+	<!--p Welcome to <b>#{title}</b> -->
+	p Hi, #{userinfo.nickname}
+	img.img-circle(src='#{userinfo.headimgurl}', width=50, height=50)
+	p 即将上线，敬请期待
+

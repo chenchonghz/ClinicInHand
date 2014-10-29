@@ -1,0 +1,53 @@
+script(type="text/javascript").
+	
+
+	$(document).ready(function(){
+
+		$('#resourceselect .dropdown-menu li').click(function(){
+
+			//console.log('%s---%s', $(this).parent().parent().attr('data-name'), $(this).attr('data-menu-index'));
+			
+			if ($(this).attr('data-menu-index') === '0') {
+				selectedRid = $(this).parent().parent().attr('data-rid');
+				selectedRname = $(this).parent().parent().attr('data-name');
+				selectedPrice = $(this).parent().parent().attr('data-price');
+				selectedTp = $(this).parent().parent().find('a strong').html();
+			} else if ($(this).attr('data-menu-index') === '1') {
+				likedRid = ($(this).parent().parent().attr('data-rid'));
+			}
+			
+			$('.modal').modal('hide');
+		});
+	});
+
+div.modal-header
+	button.close(type="button" data-dismiss="modal" aria-hidden="true") &times;
+	strong 可选就诊时间
+div.modal-body#resourceselect
+	if resources == null || resources.length == 0
+		h3
+			strong 暂无数据
+	else
+		center(style='margin-bottom:10px;')
+			strong(style='font-size:12px;') #{fname}-#{wname}-#{qname}
+		ul.nav.nav-pills.nav-stacked
+			each resource in resources
+				-var obj = JSON.parse(resource); var start = new Date(obj.start); var stop = new Date(obj.stop);
+				li.dropdown(data-rid=obj.rid, data-name=obj.name, data-price=obj.price)
+					a.dropdown-toggle(data-toggle="dropdown")
+						strong=(start.getMonth()+1) + '月' + (start.getDate()+1) + '日 ' + start.getHours() + '-' + stop.getHours() + ''
+						span.pull-right
+							span.label.label-danger ￥#{obj.price}
+							span &nbsp;
+							span.label.label-primary=obj.type
+					ul.dropdown-menu
+						li(role="presentation", data-menu-index='0')
+							a(href='#')
+								span.glyphicon.glyphicon-time
+								strong(style='font-size:18px;') &nbsp;&nbsp;确定预约
+						li.divider(role="presentation")
+						li(role="presentation", data-menu-index='1')
+							a(href='#')
+								span.glyphicon.glyphicon-bookmark
+								strong(style='font-size:18px;') &nbsp;&nbsp;加入收藏
+					div(style='border-bottom:1px dashed #cccccc;height:5px;overflow:hidden;')

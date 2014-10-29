@@ -1,0 +1,37 @@
+extends layout
+
+block content
+	script(type='text/javascript' src='/javascripts/jquery.qrcode.min.js')
+	script(type='text/javascript' src='/javascripts/jquery.lazyload.min.js')
+	script(type='text/javascript').
+
+		$(document).ready(function(){
+			$("img.lazy").lazyload();
+			var mid = $('#midtext').val();
+			$('#midtext').remove();
+			$('#qrcode').qrcode({width:'200', height:'200', text:mid});
+			$('#qrcode').fadeIn(1500);
+		});
+	input.hide#midtext(type='text' value='#{member.mid}')
+	.container
+		center.well
+			p(style='font-size:36px;')
+				strong=member.realname
+			img.lazy.img-circle(data-original='#{wechatuser.headimgurl}', width=60, height=60)
+			h4
+				if member.level == 'N'
+					span.label.label-default
+						strong 普通会员
+				else if member.level == 'V'
+					span.label.label-warning
+						strong VIP
+			
+			h5
+				strong=member.phone
+			h6
+				strong=member.email
+			div#qrcode(style='display:none;')
+			p(style='font-size:11px;')
+				strong 卡号后四位 #{encryptedmid}
+
+			

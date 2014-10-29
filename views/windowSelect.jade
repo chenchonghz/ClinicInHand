@@ -1,0 +1,27 @@
+script(type="text/javascript").
+	$(document).ready(function(){
+		$('#windowselect li').click(function(){
+
+			if ($(this).attr('wid') === selectedWid) {
+				//do nothing
+			} else {
+				selectedWid = $(this).attr('wid');
+				selectedWname = $(this).attr('wname');
+				$('#promptck').html(selectedWname);
+
+			}
+			$('.modal').modal('hide');
+		});
+	});
+
+
+div.modal-header
+	button.close(type="button" data-dismiss="modal" aria-hidden="true") &times;
+	strong 选择挂号窗口
+div.modal-body#windowselect
+	ul.nav.nav-pills.nav-stacked
+		each windowstr in windows
+			-var obj = JSON.parse(windowstr);
+			li(wid=obj.wid, wname=obj.name)
+				a
+					strong=obj.name

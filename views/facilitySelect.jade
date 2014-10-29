@@ -1,0 +1,40 @@
+script(type="text/javascript").
+
+	$(document).ready(function(){
+
+		$('#facilityselect li').click(function(){
+
+			if ($(this).attr('fid') === selectedFid) {
+				// do nothing
+			} else {
+				selectedFid = $(this).attr('fid');			
+				selectedFname = $(this).attr('fname');
+				$('#promptyy').html(selectedFname);
+				
+				selectedSpid = '';
+				selectedSpname = '';
+				$('#promptks').html('请选择科室');
+
+				selectedWid = '';
+				selectedWname = '';
+				$('#promptck').html('请选择挂号窗口');
+			}
+
+			$('.modal').modal('hide');
+		});
+	});
+
+div.modal-header
+	button.close(type="button" data-dismiss="modal" aria-hidden="true") &times;
+	strong 选择医院
+div.modal-body#facilityselect
+	if facilities == null || facilities.length == 0
+		h3
+			strong 暂无数据
+	else
+		ul.nav.nav-pills.nav-stacked
+			each facility in facilities
+				-var obj = JSON.parse(facility);
+				li(fid=obj.fid, fname=obj.name)
+					a
+						strong=obj.name
